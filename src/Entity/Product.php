@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -14,33 +16,46 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[Assert\NotBlank(message: "Le nom du product est obligatoire")]
+    private ?string $nom = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255)]
-    private ?float $price = null;
+    #[ORM\Column]
+    #[Assert\NotBlank(message: "Le prix est obligatoire")]
+    #[Assert\Positive(message: "Le prix doit être positif")]
+    private ?float $prix = null;
 
     #[ORM\Column]
-    private ?int $quantity = null;
+    #[Assert\NotBlank(message: "La quantité est obligatoire")]
+    #[Assert\PositiveOrZero(message: "La quantité doit être positive ou zéro")]
+    private ?int $quantite = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getNom(): ?string
     {
-        return $this->name;
+        return $this->nom;
     }
 
-    public function setName(string $name): static
+    public function setNom(string $nom): static
     {
-        $this->name = $name;
+        $this->nom = $nom;
 
         return $this;
     }
@@ -57,26 +72,38 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?float
+    public function getPrix(): ?float
     {
-        return $this->price;
+        return $this->prix;
     }
 
-    public function setPrice(float $price): static
+    public function setPrix(float $prix): static
     {
-        $this->price = $price;
+        $this->prix = $prix;
 
         return $this;
     }
 
-    public function getQuantity(): ?int
+    public function getQuantite(): ?int
     {
-        return $this->quantity;
+        return $this->quantite;
     }
 
-    public function setQuantity(int $quantity): static
+    public function setQuantite(int $quantite): static
     {
-        $this->quantity = $quantity;
+        $this->quantite = $quantite;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
 
         return $this;
     }
